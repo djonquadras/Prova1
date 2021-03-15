@@ -4,11 +4,11 @@ params:
   universidade: "Universidade Federal de santa Catarina"
   centro: "Centro Tecnológico"
   departamento: "Departamento de Engenharia Elétrica e Eletrônica"
-  disciplina: "Conversão Eletromecânica de Energia A"
+  disciplina: "Conversão Eletromecânica de Energia A - Turma 06213"
   orientador: "Renato Lucas Pacheco"
-  titulo: "Trabalho 1"
+  titulo: "Avaliação 1"
   cidade: "Florianópolis"
-  ano: "2020"
+  ano: "15/03/2021"
 number_sections: true
 header-includes:
   - \usepackage{indentfirst} # Indenta o primeiro parágrafo de cada seção.
@@ -77,7 +77,7 @@ toc: false
 \newpage
 
 \pagestyle{plain}
-```{r echo=FALSE, child="questao13.Rmd"}
+```{r echo=FALSE, child="questao1.Rmd"}
 ```
 
 \clearpage
@@ -85,7 +85,7 @@ toc: false
 
 \newpage
 \pagestyle{plain}
-```{r echo=FALSE, child="questao14.Rmd"}
+```{r echo=FALSE, child="questao2.Rmd"}
 ```
 
 \clearpage
@@ -94,15 +94,10 @@ toc: false
 
 \newpage
 \pagestyle{plain}
-```{r echo=FALSE, child="questao15.Rmd"}
+```{r echo=FALSE, child="questao3.Rmd"}
 ```
 
 \clearpage
 
-
-\newpage
-\pagestyle{plain}
-```{r echo=FALSE, child="questao16.Rmd"}
-```
 
 

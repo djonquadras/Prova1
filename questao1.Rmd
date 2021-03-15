@@ -1,11 +1,156 @@
 <!-- Criado por Djonathan Quadras -->
 
+# Questão 1 {-}
 
-# Questão 1.3 {-}
+Questão dissertativa da lista 1 (Exemplos 1.3,1.4,1.5, e 1.6): explicar como o problema foi resolvido, suas dificuldades, pontos interessantes, comentar os resultados, outras informações que julgarem interessantes). A questão vale até oito (8) pontos, desde que o exercício esteja resolvido no trabalho. A entrega do trabalho vale outros dois (2) pontos (exercício completo. apresentação, clareza, ineditismo - não ser "cola" e aspectos assim).
 
 ## Enunciado {-}
 
 ```{r, echo=FALSE}
+S = 20000
+V11 = 2400
+V22 = 240
+a = V11/V22
+f = 60
+Pcc = 257
+Icc = 8.33
+Vcc = 61.3
+Pca = 122
+Ica = 1.04
+Vca = 240
+```
+
+Os seguintes resultados foram obtidos de ensaios realizados em um transformador de $`r S ` VA$, $`r V11`/`r V22` V$, $`r f` Hz$:
+
+- Ensaio de curto-circuito: $P = `r Pcc`W$; $I = `r Icc` A$; $V = `r Vcc`V$ (medidas pelo lado 1);
+- Ensaio de circuito aberto: $P = `r Pca`W$; $I = `r Ica` A$; $V = `r Vca`V$ (medidas pelo lado 2);
+
+Pede-se:
+
+a. O circuito elétrico equivalente completo (modelo T) referido aos dois lados do transformador (dois circuitos). Colocar os valores diretamente nos circuitos elétricos equivalentes;
+b. A corrente de excitação, se for aplicada tensão nominal no lado de mais alta tensão, referida a este lado;
+c. Comparar e comentar os resultados obtidos nos itens anteriores, tomando como referência os resultados obtidos no item a e a corrente de excitação calculada no item b da questão 1.3, respectivamente;
+d. Refazer o cálculo do rendimento do item b da questão 1.4, incluindo as perdas no ferro em circuito aberto como perda do problema, desde que o ensaio tenha sido feito com tensão nominal;
+e. Comparar e comentar os resultados obtidos nos itens a e b da questão 1.4 e no item d deste exemplo.
+
+## Comentários sobre a questão {-}
+
+Toda a resolução, bem como a lógica utilizada para resolver estão descritas abaixo. É importante ressaltar que a resolução é exatamente a mesma utilizada no trabalho 1.
+
+Essa questão foi uma questão muito interessante por englobar diversos conceitos referentes a máquinas e circuitos elétricos. As principais dificuldades encontradas foram de compreender a qual lado os valores calculados pertenciam (como por exemplo, se os valores de $r_1, r_2, x_1, x_2, g_m$ e $b_m$ eram referentes ao lado primário ou secundário).
+
+Outra dúvida que apareceu durante a realização foi de como seria incluída a perda de potência no ferro. Por tanto, foi decidido remover a potência perdida da potência de saída.
+
+Os valores encontrados nessa questão (para $I_\phi$ e $\Re$) apontam que os resultados estão de acordo com o esperado e já calculado nos exemplos 1.3, 1.4 e 1.5, o que mostra que é possível utilizar qualquer um dos modelos e qualquer uma das abordagens sem perdas consideráveis no resultado final.
+
+
+## Resolução  {-}
+
+```{r, echo=FALSE}
+ I1nom = S/V11
+ I2nom = S/V22
+ rSEC = Pcc/(2*Icc^2)
+ xSEC = sqrt((Vcc/Icc)^2-(Pcc/(Icc^2))^2)/2
+ r1 = rSEC*a^2
+ x1 = xSEC*a^2
+ 
+ gmPRIS = Pca/Vca^2
+ bmPRIS = (sqrt((Ica/Vca)^2-(gmPRIS)^2))
+ gmSECS = gmPRIS*a^2
+ bmSECS = bmPRIS*a^2
+ 
+ rf = (gmPRIS)/(gmPRIS^2 + bmPRIS^2)
+ xf = (bmPRIS)/(gmPRIS^2 + bmPRIS^2)
+
+ ZTOTAL1 = complex(real = r1+rf, imaginary = x1+xf)
+ iphi = Vcc/(ZTOTAL1)
+ p = rf*Mod(iphi)^2
+```
+
+Inicialmente, será calculado as correntes nominais do lado primário e secundário.
+
+$$
+I_{nominal_1} = \frac{S_{nominal}}{V_{nominal_1}} = \frac{`r S`}{`r V11`} \implies \boxed{I_{nominal_1} = `r round(I1nom,2)`A}
+$$
+
+$$
+I_{nominal_2} = \frac{S_{nominal}}{V_{nominal2}} = \frac{`r S`}{`r V22`} \implies \boxed{I_{nominal_2} = `r round(I2nom,2)`A}
+$$
+
+A Tabela \@ref(tab:tab4) compara os valores obtidos com os valores medidos.
+
+```{r tab4, echo=FALSE}
+resultados <- data.frame(T1 = c("Primário", "Secundário"),
+                         T2 = c(paste(round(I1nom,2),"A"),paste(round(I2nom,2),"A")),
+                         T3 = c(paste(Icc, "A"),paste(Ica,"A")))
+colnames(resultados) <- c("Lado", "Ensaio", "Calculado")
+k <- knitr::kable(resultados, booktabs = T, escape = FALSE, caption = "Comparação entre os valores medidos e calculados")
+kableExtra::kable_styling(k, latex_options = "hold_position")
+```
+
+Concluí-se, assim, que o ensaio foi feito pelo lado de alta tensão (primário), uma vez que os valores medido e calculado são muito próximos. Por meio dos valores obtidos no ensaio de curto circuito é possível calcular $r1$, $r2$, $x1$ e $x2$ referentes ao lado primário (de alta tensão). Assim,
+
+$$
+r_1 = r_2 = \frac{P_{cc}}{2I^2_{cc}} = \frac{`r Pcc`}{2(`r Icc`)^2} \implies \boxed{r_1 = r_2 = `r round(rSEC,3)`\Omega}
+$$
+
+$$
+x_1 = x_2 = \frac{\sqrt{(\frac{V_{cc}}{I_{cc}})^2-(\frac{P_{cc}}{I^2_{cc}})^2}}{2} = \frac{\sqrt{(\frac{`r Vcc`}{`r Icc`})^2-(\frac{`r Pcc`}{`r Icc^2`})^2}}{2} \implies \boxed{x_1 = x_2 = `r round(xSEC,4)`\Omega}
+$$
+
+Por meio dos valores obtidos no ensaio de curto aberto é possível calcular $g_m$ e $b_m$ referentes ao lado secundário (de baixa tensão). Assim,
+
+$$
+g_m = \frac{P_{ca}}{2V^2_{ca}} = \frac{`r Pca`}{`r Vca`^2} \implies \boxed{g_m = `r gmSECS` mS}
+$$
+
+$$
+b_m = \sqrt{(\frac{I_{ca}}{V_{ca}})^2-(\frac{P_{ca}}{V^2_{ca}})^2} = \sqrt{(\frac{`r Ica`}{`r Vca`})^2-(\frac{`r Pca`}{`r Vca^2`})^2} \implies \boxed{b_m = `r bmSECS` mS}
+$$
+
+Com os valores, é possível realizar as conversões para determinar os circuitos T referentes ao lado primário e secundário. Os que já estavam do lado primário serão dividitos pela taxa $a = `r a`$ para irem para o lado secundário, enquanto os qu estavam no lado secundário serão multiplicados pela mesma taxa para irem ao lado primário. Assim, a Tabela \@ref(tab:tab5) apresenta os valores para ambos os lados.
+
+```{r tab5, echo=FALSE}
+resultados <- data.frame(T1 = c("$r_1 = r_2$", "$x_1 = x2$", "$g_m$", "$b_m$"),
+                         T2 = c(round(r1,3), round(x1,3),gmPRIS,bmPRIS),
+                         T3 = c(round(rSEC,3),round(xSEC,3),gmSECS,bmSECS))
+colnames(resultados) <- c("Variável", "Primário", "Secundário")
+k <- knitr::kable(resultados, booktabs = T, escape = FALSE, caption = "Variáveis para Primário e Secundário")
+kableExtra::kable_styling(k, latex_options = "hold_position")
+```
+
+
+Com todos os valores é possível determinar os circuitos T para as duas referências.
+
+```{r probA004, fig.align='center', echo=FALSE, fig.cap='Circuito T',  out.width='80%'}
+knitr::include_graphics('images/prob13A004.jpg', dpi = NA)
+```
+
+
+Como não há cargas no lado de baixa tensão, $I_2 = 0$ e $I_1 = I_\phi$. Assim, considerando o ramo em paralelo como sendo uma única impedância de valor $Z = g_m||b_m$ e aplicando uma análise de malhas, é possível encontrar o valor da corrente.
+
+$$
+I_{\phi} = \frac{V_{cc}}{Z_{total}} = \frac{`r Vcc`}{`r round(ZTOTAL1,2)`} \implies \boxed{I_{\phi} = `r round(iphi,2)`A}.
+$$
+
+E, como esperado, o módulo de $I_\phi = `r round(Mod(iphi),3)` A$ é muito próximo da corrente medida em circuito aberto ($I_2 = `r Ica` A$). Ademais, os valores de $I_\phi$ foram iguais para as questões 1.3 e 1.6.
+
+
+A potência perdida no metal é dada por
+
+$$
+P_f = |Z||I^2_\phi|
+$$
+
+Assim,
+
+$$
+\boxed{P_f = `r p`W}
+$$
+```{r, echo=FALSE}
+
+# Variáveis   
+
 r1 = 1.85188
 x1 = 3.17947
 gm = 1/(0.0211806/1000)
@@ -25,33 +170,8 @@ if(indutivo){
 } else {
   theta = abs(acos(fp))
 }
-```
 
-
-Um transformador de potência de $`r S` VA$, $`r v1`/`r v2` V$, $`r f` Hz$, possui os seguintes parâmetros:
-
-$$
-\begin{cases}
-  r_1 = `r r1`[\Omega]; \quad x_1 = `r x1`[\Omega]; \quad g_m = `r (1/gm)`[S]; \quad b_m = `r (1/bm)`[S] \\
-  r_2 = `r r2`[\Omega]; \quad x_2 = `r x2`[\Omega] \quad (\text{Referidos ao lado 2})
-\end{cases}
-$$
-
-
-Pede-se:
-
-a. O circuito elétrico equivalente completo (modelo “T”) do transformador (desenhos e parâmetros), referido aos dois lados do transformador;
-b. A corrente de excitação, a tensão e o fator de potência na fonte e a potência aparente fornecida pela fonte, referidas ao primário (lado 1), se o transformador estiver alimentando carga nominal (potência e tensão nominais), fator de potência 0,6 indutivo, usando o circuito equivalente completo (modelo “T”);
-c. Repetir o item b, usando o modelo impedância série;
-d. Comentar os resultados obtidos nos itens b e c, comparando a precisão e o tempo de resolução, usando os resultados do modelo “T” como referência.
-
-
-## Resolução {-}
-
-```{r, echo=FALSE}
-
-# Modelo T
-
+# Cálculos para T
 ilA = S/v2
 i2A = complex(modulus = ilA/a, argument = theta)
 v2l = a*v2
@@ -63,7 +183,7 @@ i1A = i2A + iphi
 v1lA = e1 + complex(real = r1, imaginary = x1)*i1A
 sA = Mod(v1lA)*Mod(i1A)
 
-# Modelo Impedância
+# Cálculo para Impedância Série
 
 ilB = S/v2
 i2B = complex(modulus = ilB/a, argument = theta)
@@ -71,117 +191,53 @@ v2l = a*v2
 i1B = i2B 
 v1lB = complex(real = r1 + (a^2)*r2, imaginary = x1 + (a^2)*x2)*i1B + v2l
 sB = Mod(v1lB)*Mod(i1B)
+
+# SEGUNDA PARTE
+
+# Rendimento Modelo T
+
+thetaVT = Arg(v1lA)
+thetaIT = Arg(i1A)
+etaT = 100*(S*fp)/(sA*cos(thetaVT - thetaIT))
+
+# Rendimento Impedância em série
+thetaVIS = Arg(v1lB)
+thetaIIS = Arg(i1B)
+etaIS = 100*(S*fp)/(sB*cos(thetaVIS - thetaIIS))
+
+# Regulação Modelo T
+rT = 100*(Mod(v1lA)-Mod(v2l))/Mod(v2l)
+
+# Regulação Impedância em Série
+rIS = 100*(Mod(v1lB)-Mod(v2l))/Mod(v2l)
+
+#RENDIEMNTO NOVO
+etaNOVO = 100*(S*fp - p)/(sB*cos(thetaVIS - thetaIIS))
 ```
 
-De acordo com as informações fornecidas, o circuito inicial é conforme apresentado na Figura  \@ref(fig:probA001).
-
-```{r probA001, fig.align='center', echo=FALSE, fig.cap='Circuito Inicial', out.width='80%'}
-knitr::include_graphics('images/prob13A001.jpg', dpi = NA)
-```
-
-Com isso, e sabendo-se que $a = \frac{V_1}{V_2} = `r a`$, temos o Circuito em T apresentado na Figura \@ref(fig:probA002)
-
-```{r probA002, fig.align='center', echo=FALSE, fig.cap='Circuito T',  out.width='80%'}
-knitr::include_graphics('images/prob13A002.jpg', dpi = NA)
-```
-
-De acordo com o enunciado, temos que a potência na carga é de $S = `r S` VA$. Sabe-se que $S = I_LV_2$, então, como $V2 = `r v2`V$, temos que
+Para calcular o rendimento, será utilizada a equação
 
 $$
-S = I_LV_2 \implies I_L = \frac{`r S`}{`r v2`} \implies \boxed{I_L = `r round(ilA,2)` A}.
+\eta = \frac{P_s-P_f}{P_e},
 $$
 
-Ademais, uma vez que o fator de potência é de `r fp` indutivo, temos que
+Assim, de acordo com os valores encontrados nas questões 1.4 e 1.6,
 
 $$
-\theta_i = - \arccos{`r fp`} \implies \boxed{\theta = `r round(180*theta/pi,2)`}
+\eta_{IS} = \frac{(`r S`)(`r fp`)-`r p`}{(`r round(sB,2)`)(\cos{(`r round(thetaVIS*180/pi,2)` - `r round(thetaIIS*180/pi,2)`)})} \implies \boxed{\eta_{IS} = `r paste(round(etaNOVO,2), "\\%")`}
 $$
 
-E, como $I'_2 = \frac{I_L}{a}$, temos que
+A Tabela \@ref(tab:tab6) mostra a comparação de rendimentos entre os modelos propostas na quesstão 1.4 e 1.6 (este considerando as perdas). Pode-ser perceber que os resultados são bastante próximos, principalmente considerando as perdas no ferro. A consideração das perdas gerou um impacto mínimo, o que mostra que a sua utilização pouco impacta no resultado final.
 
-$$
-I_2 = \frac{`r round(ilA,2)`}{`r a`} \implies \boxed{`r round(i2A,2)` A}
-$$
-
-Considerando-se $V'_2 = aV_2$, temos que
-
-$$
-\boxed{V'_2 = `r v2l` V}
-$$
-
-Dessa forma, através da malha 2 conseguimos calcular a tensão sobre a carga em paralelo (E1). Portanto,
-
-$$
-E_1 = V'_2 + (`r complex(real = r1, imaginary = x1)`)I_2 \implies \boxed{E_1 = `r round(e1,2)` V}.
-$$
-
-Com o valor de $E_1$ é possível calcular as correntes $I_c$ e $I_m$ por meio da lei de ohm.
-
-$$
-\boxed{I_c = `r round(ic,2)` A \quad I_m = `r round(im,2)` A}.
-$$
-
-Com isso, temos o valor da corrente de excitação ($I_\phi$) e de $I_1$.
-
-$$
-  I_\phi = I_c + I_m \implies \boxed{I_\phi = `r round(iphi,2)`A}
-$$
-
-$$
-  I_1 = I_2 + I_\phi \implies \boxed{I_1 = `r round(i1A,2)`A}
-$$
-
-Finalmente, aplicando uma análise de malhas na malha 1, temos que a tensão na fonte é
-
-$$
-  V_1 = E_1 + (`r complex(real = r1, imaginary = x1)`)I_1 \implies \boxed{V_1 = `r round(v1lA)` V}.
-$$
-
-Por fim, a potência aparente fornecida pela fonte é
-
-$$
-  S = |V_1||I_1| \implies \boxed{S = `r sA` VA}.
-$$
-
-O circuito equivalente para o modelo proposto da forma de impedância em série é apresentado na Figura \@ref(fig:probA003)
-
-```{r probA003, fig.align='center', echo=FALSE, fig.cap='Circuito Impedância em Série', out.width='80%'}
-knitr::include_graphics('images/prob13A003.jpg', dpi = NA)
-```
-
-Dessa forma, semelhante ao modelo anterior, temos
-
-$$
-\boxed{I_1 = I_2 = `r round(i2B,2)`A}, \quad \boxed{V'_2 = `r v2l`V}.
-$$
-
-Assim, aplicando uma análise de malhas, temos que
-
-$$
-V_1 = (`r complex(real = r1 + (a^2)*r2, imaginary = x1 + (a^2)*x2)`)I_1 + V_2 \implies \boxed{V_1 = `r round(v1lB,2)`}
-$$
-
-E, finalmente, a potência aparente fornecida pela fonte é
-
-$$
-\boxed{S = |V_1||I_1| \implies S = `r round(sB,4)`VA}.
-$$
-
-Com base na Tabela \@ref(tab:tab1) podemos perceber que os modelos tem resultados muito semelhantes (com uma diferença máxima de até $1,25%$). Isso comprova que utilizar o modelo de Impedância em Série (desconsiderando as perdas em $g_m$ e $b_m$) não causam perdas significativas para a modelagem dos sistemas.
-
-
-```{r tab1, echo=FALSE}
-resultados <- data.frame(T1 = c("$I_1$ [A]", "$V_1$ [V]", "$I_2$ [A]", "$V'_2$ [V]", "$S$ [VA]"),
-                         T2 = c(round(i1A,2), round(v1lA,2), round(i2A,2), round(v2l,2), round(sA,2)),
-                         T3 = c(round(i1B,2), round(v1lB,2), round(i2B,2), round(v2l,2), round(sB,2)),
-                         T4 = c(paste(abs(round(100*((Mod(i1A)-Mod(i1B))/Mod(i1A)),2)), "\\%"),
-                                paste(abs(round(100*((Mod(v1lA)-Mod(v1lB))/Mod(v1lA)),2)), "\\%"),
-                                paste(abs(round(100*((Mod(i2A)-Mod(i2B))/Mod(i2A)),2)), "\\%"),
-                                "0 \\%",
-                                paste(abs(round(100*((sA-sB)/sA),2)), "\\%")))
-colnames(resultados) <- c("Variável", "Modelo T", "Modelo Impedância Série", "Variação (\\%)")
+```{r tab6, echo=FALSE}
+resultados <- data.frame(T1 = c("Rendimento"),
+                         T2 = c(paste(round(etaT,2), "\\%")),
+                         T3 = c(paste(round(etaIS,2), "\\%")),
+                         T4 = c(paste(round(etaNOVO,2), "\\%")))
+colnames(resultados) <- c("Variável", "Modelo T", "Impedância em Série", "Com as Perdas")
 k <- knitr::kable(resultados, booktabs = T, escape = FALSE, caption = "Comparação entre os modelos")
 kableExtra::kable_styling(k, latex_options = "hold_position")
 ```
+
 
 
